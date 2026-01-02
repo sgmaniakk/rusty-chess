@@ -1,6 +1,6 @@
 mod display;
 
-use chess::{Board, ChessMove, BoardStatus, MoveGen};
+use chess::{Board, ChessMove, BoardStatus, MoveGen, Square, Piece};
 use std::io::{self, Write};
 use std::str::FromStr;
 
@@ -8,7 +8,7 @@ use display::{display_board, display_status};
 
 fn main() {
     println!("=== Rusty Chess - Local Two Player Mode ===\n");
-    println!("Enter moves in UCI format (e.g., e2e4, e7e8q for promotion)");
+    println!("Enter moves in UCI format (e.g., e2e4) or short notation (e.g., e4 for pawn moves)");
     println!("Type 'quit' to exit, 'moves' to see legal moves\n");
 
     let mut board = Board::default();
@@ -64,8 +64,13 @@ fn main() {
         }
 
         // Try to parse and make the move
-        match ChessMove::from_str(input) {
-            Ok(chess_move) => {
+        let chess_move = match ChessMove::from_str(input) {
+            Ok(mv) => Some(mv),
+            Err(_) => parse_short_notation(input, &board),
+        };
+
+        match chess_move {
+            Some(chess_move) => {
                 if board.legal(chess_move) {
                     move_history.push(input.to_string());
                     board = board.make_move_new(chess_move);
@@ -73,10 +78,42 @@ fn main() {
                     println!("❌ Illegal move! Try again.");
                 }
             }
-            Err(_) => {
-                println!("❌ Invalid move format! Use UCI notation (e.g., e2e4)");
+            None => {
+                println!("❌ Invalid move format! Use UCI notation (e.g., e2e4) or short notation (e.g., e4)");
             }
         }
+    }
+}
+
+fn parse_short_notation(input: &str, board: &Board) -> Option<ChessMove> {
+    // Only handle 2-character input (like "e4")
+    if input.len() != 2 {
+        return None;
+    }
+
+    // Try to parse as a destination square
+    let dest_square = match Square::from_str(input) {
+        Ok(sq) => sq,
+        Err(_) => return None,
+    };
+
+    // Find all legal pawn moves to this square
+    let legal_moves: Vec<ChessMove> = MoveGen::new_legal(board)
+        .filter(|mv| {
+            // Check if this move ends at the destination square
+            if mv.get_dest() != dest_square {
+                return false;
+            }
+            // Check if it's a pawn move
+            board.piece_on(mv.get_source()) == Some(Piece::Pawn)
+        })
+        .collect();
+
+    // If exactly one pawn can move there, use it
+    if legal_moves.len() == 1 {
+        Some(legal_moves[0])
+    } else {
+        None
     }
 }
 
@@ -100,6 +137,7 @@ fn show_help() {
     println!("\n=== Help ===");
     println!("Enter moves in UCI format:");
     println!("  - Normal move: e2e4 (from e2 to e4)");
+    println!("  - Short notation: e4 (pawn moves only)");
     println!("  - Castling: e1g1 (kingside), e1c1 (queenside)");
     println!("  - Promotion: e7e8q (promote to queen)");
     println!("    Promotion pieces: q=queen, r=rook, b=bishop, n=knight");
