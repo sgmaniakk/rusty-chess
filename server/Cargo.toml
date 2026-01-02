@@ -1,0 +1,39 @@
+[package]
+name = "rusty-chess-server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "rusty_chess_server"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rusty-chess-server"
+path = "src/main.rs"
+
+[dependencies]
+# Workspace shared
+shared = { path = "../shared" }
+
+# From workspace
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+chess = { workspace = true }
+tokio = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+sqlx = { workspace = true }
+bcrypt = { workspace = true }
+jsonwebtoken = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Server-specific
+futures = "0.3"

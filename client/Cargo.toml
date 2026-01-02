@@ -1,0 +1,27 @@
+[package]
+name = "rusty-chess-client"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+# Workspace shared
+shared = { path = "../shared" }
+
+# From workspace
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+chess = { workspace = true }
+tokio = { workspace = true }
+ratatui = { workspace = true }
+crossterm = { workspace = true }
+reqwest = { workspace = true }
+tokio-tungstenite = { workspace = true }
+
+# Client-specific
+futures-util = "0.3"
