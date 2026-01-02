@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -45,6 +46,21 @@ impl std::fmt::Display for GameStatus {
             GameStatus::BlackWon => write!(f, "black_won"),
             GameStatus::Draw => write!(f, "draw"),
             GameStatus::Abandoned => write!(f, "abandoned"),
+        }
+    }
+}
+
+impl FromStr for GameStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "active" => Ok(GameStatus::Active),
+            "white_won" => Ok(GameStatus::WhiteWon),
+            "black_won" => Ok(GameStatus::BlackWon),
+            "draw" => Ok(GameStatus::Draw),
+            "abandoned" => Ok(GameStatus::Abandoned),
+            _ => Err(format!("Invalid game status: {}", s)),
         }
     }
 }

@@ -37,3 +37,6 @@ tracing-subscriber = { workspace = true }
 
 # Server-specific
 futures = "0.3"
+rand = "0.8"
+dotenvy = "0.15"
+async-trait = "0.1"
