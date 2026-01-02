@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::types::{Game, GameInfo, Move, User, UserProfile};
 
