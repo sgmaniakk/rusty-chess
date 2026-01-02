@@ -5,6 +5,14 @@ edition.workspace = true
 authors.workspace = true
 license.workspace = true
 
+[[bin]]
+name = "rusty-chess-client"
+path = "src/main.rs"
+
+[[bin]]
+name = "rusty-chess-local"
+path = "src/local.rs"
+
 [dependencies]
 # Workspace shared
 shared = { path = "../shared" }

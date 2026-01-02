@@ -4,6 +4,7 @@ A network-based correspondence chess application built in Rust with a client-ser
 
 ## Features
 
+- **Local Two-Player Mode**: Play chess on the same machine (perfect for testing!)
 - **Network Play**: Client-server architecture for remote play
 - **Move Deadlines**: 3-day timer per move with automatic forfeit
 - **Real-time Updates**: WebSocket notifications for opponent moves
@@ -30,6 +31,22 @@ A network-based correspondence chess application built in Rust with a client-ser
 - Rust 1.75+
 
 ## Quick Start
+
+### Local Mode (No Server Required)
+
+Play a quick game locally to test the chess engine:
+
+```bash
+cargo run --bin rusty-chess-local
+```
+
+Commands:
+- Enter moves in UCI format: `e2e4`, `g1f3`, etc.
+- Type `moves` to see all legal moves
+- Type `help` for move format help
+- Type `quit` to exit
+
+### Network Mode (Full Features)
 
 ### 1. Clone and Setup
 
