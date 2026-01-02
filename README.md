@@ -43,6 +43,7 @@ cargo run --bin rusty-chess-local
 Commands:
 - Enter moves in UCI format: `e2e4`, `g1f3`, etc.
 - Or use short notation for pawn moves: `e4`, `d5`, etc.
+- Pawn captures: `exd5`, `fxe6`, etc.
 - Type `moves` to see all legal moves
 - Type `help` for move format help
 - Type `quit` to exit

@@ -1,6 +1,6 @@
 mod display;
 
-use chess::{Board, ChessMove, BoardStatus, MoveGen, Square, Piece};
+use chess::{Board, ChessMove, BoardStatus, MoveGen, Square, Piece, File};
 use std::io::{self, Write};
 use std::str::FromStr;
 
@@ -8,7 +8,7 @@ use display::{display_board, display_status};
 
 fn main() {
     println!("=== Rusty Chess - Local Two Player Mode ===\n");
-    println!("Enter moves in UCI format (e.g., e2e4) or short notation (e.g., e4 for pawn moves)");
+    println!("Enter moves: e2e4 (UCI), e4 (pawn move), or exd5 (pawn capture)");
     println!("Type 'quit' to exit, 'moves' to see legal moves\n");
 
     let mut board = Board::default();
@@ -86,15 +86,33 @@ fn main() {
 }
 
 fn parse_short_notation(input: &str, board: &Board) -> Option<ChessMove> {
-    // Only handle 2-character input (like "e4")
-    if input.len() != 2 {
-        return None;
-    }
-
-    // Try to parse as a destination square
-    let dest_square = match Square::from_str(input) {
-        Ok(sq) => sq,
-        Err(_) => return None,
+    let (source_file, dest_square) = match input.len() {
+        // Regular pawn move: "e4"
+        2 => {
+            let dest = Square::from_str(input).ok()?;
+            (None, dest)
+        }
+        // Pawn capture: "exd5" (4 characters: e + x + d + 5)
+        4 => {
+            if input.chars().nth(1)? != 'x' {
+                return None;
+            }
+            let file_char = input.chars().next()?;
+            let file = match file_char {
+                'a' => File::A,
+                'b' => File::B,
+                'c' => File::C,
+                'd' => File::D,
+                'e' => File::E,
+                'f' => File::F,
+                'g' => File::G,
+                'h' => File::H,
+                _ => return None,
+            };
+            let dest = Square::from_str(&input[2..]).ok()?;
+            (Some(file), dest)
+        }
+        _ => return None,
     };
 
     // Find all legal pawn moves to this square
@@ -105,7 +123,16 @@ fn parse_short_notation(input: &str, board: &Board) -> Option<ChessMove> {
                 return false;
             }
             // Check if it's a pawn move
-            board.piece_on(mv.get_source()) == Some(Piece::Pawn)
+            if board.piece_on(mv.get_source()) != Some(Piece::Pawn) {
+                return false;
+            }
+            // If source file specified, check it matches
+            if let Some(file) = source_file {
+                if mv.get_source().get_file() != file {
+                    return false;
+                }
+            }
+            true
         })
         .collect();
 
@@ -138,6 +165,7 @@ fn show_help() {
     println!("Enter moves in UCI format:");
     println!("  - Normal move: e2e4 (from e2 to e4)");
     println!("  - Short notation: e4 (pawn moves only)");
+    println!("  - Pawn capture: exd5 (pawn on e-file captures on d5)");
     println!("  - Castling: e1g1 (kingside), e1c1 (queenside)");
     println!("  - Promotion: e7e8q (promote to queen)");
     println!("    Promotion pieces: q=queen, r=rook, b=bishop, n=knight");
